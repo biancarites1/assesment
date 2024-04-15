@@ -1,6 +1,7 @@
 package com.example.demo.rest.service;
 
 import com.example.demo.AppConfig;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.model.CryptoData;
 import com.example.demo.model.CryptoStatistics;
 import com.example.demo.model.NormalizedValueForCrypto;
@@ -31,7 +32,7 @@ public class RecommendationServiceTest {
     private AppConfig mockAppConfig;
     private static final String mockAllowedCryptos = "BTC,DOGE";
     @Test
-    public void testGetStatisticsBySymbol() throws Exception {
+    public void testGetStatisticsBySymbol() {
         Date date = new Date();
         List<CryptoData> mockCryptoDataList = generateCryptoData(date, BTC, 100);
         List<CryptoStatistics> expectedCryptoStatistics = generateCryptoStatistics(date, date,1);
@@ -46,8 +47,27 @@ public class RecommendationServiceTest {
         assertEquals(expectedCryptoStatistics.get(0).getMinPrice(), cryptoStatistics.getMinPrice());
     }
 
+    @Test(expected= NotFoundException.class)
+    public void testGetStatisticsBySymbolUnsupportedSymbol() {
+        Date date = new Date();
+        List<CryptoData> mockCryptoDataList = generateCryptoData(date, BTC, 100);
+        when(mockFileExtractorService.getCryptoDataList()).thenReturn(mockCryptoDataList);
+        when(mockAppConfig.getAllowedCryptos()).thenReturn("LTC");
+        recommendationService.getCryptoStatisticsForSymbol(BTC, date, date);
+   }
+
+    @Test(expected= NotFoundException.class)
+    public void testGetStatisticsNoSymbol() {
+        Date date = new Date();
+        List<CryptoData> mockCryptoDataList = generateCryptoData(date, BTC, 100);
+        List<CryptoStatistics> expectedCryptoStatistics = generateCryptoStatistics(date, date,1);
+        when(mockFileExtractorService.getCryptoDataList()).thenReturn(mockCryptoDataList);
+        when(mockAppConfig.getAllowedCryptos()).thenReturn("LTC");
+        recommendationService.getCryptoStatisticsForSymbol(null, date, date);
+    }
+
     @Test
-    public void testGetHighestNormalizedValueForCryptoByDay() throws Exception {
+    public void testGetHighestNormalizedValueForCryptoByDay() {
         Date date = new Date();
         List<CryptoData> mockCryptoDataList = Arrays.asList(new CryptoData(date, BTC, 100f),new CryptoData(date, BTC, 10f));
         when(mockAppConfig.getAllowedCryptos()).thenReturn(mockAllowedCryptos);

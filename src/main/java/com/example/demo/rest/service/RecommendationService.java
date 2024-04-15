@@ -2,6 +2,7 @@ package com.example.demo.rest.service;
 
 import com.example.demo.AppConfig;
 import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.model.CryptoData;
 import com.example.demo.model.CryptoStatistics;
 import com.example.demo.model.NormalizedValueForCrypto;
@@ -34,15 +35,20 @@ public class RecommendationService {
 
     /*extract from the list of statistics the statistic for the crypto requested*/
     public CryptoStatistics getCryptoStatisticsForSymbol(String symbol, Date startingDateToComputeStatistics, Date endingDateToComputeStatistics) {
-        return generateAllCryptoStatistics(validateCryptoDataList(), startingDateToComputeStatistics, endingDateToComputeStatistics).stream().filter((cryptoStatistics -> cryptoStatistics.getCrypto().equals(symbol))).findFirst().get();
+       List<CryptoStatistics> cryptoStatisticsList = generateAllCryptoStatistics(validateCryptoDataList(), startingDateToComputeStatistics, endingDateToComputeStatistics);
+       if(!cryptoStatisticsList.isEmpty()){
+           return generateAllCryptoStatistics(validateCryptoDataList(), startingDateToComputeStatistics, endingDateToComputeStatistics).stream().filter((cryptoStatistics -> cryptoStatistics.getCrypto().equals(symbol))).findFirst().get();
+       } else throw new NotFoundException("Symbol not found");
     }
 
     /*extract from the statistics list the normalized value computed for each crypto and sort the list of cryptos in descending order of the normalized value*/
     public List<NormalizedValueForCrypto> getNormalizedValuesForAllCryptos(Date startingDateToComputeStatistics, Date endingDateToComputeStatistics) {
         List<CryptoStatistics> cryptoStatisticsList = generateAllCryptoStatistics(validateCryptoDataList(), startingDateToComputeStatistics, endingDateToComputeStatistics);
-        cryptoStatisticsList.sort(((Comparator<CryptoStatistics>) (o1, o2) -> Float.compare(o1.getNormalizedRange(), o2.getNormalizedRange())).reversed());
-        return cryptoStatisticsList.stream().map(statistics -> new NormalizedValueForCrypto(statistics.getCrypto(), statistics.getNormalizedRange())).collect(Collectors.toList());
-
+        if(!cryptoStatisticsList.isEmpty()){
+            cryptoStatisticsList.sort(((Comparator<CryptoStatistics>) (o1, o2) -> Float.compare(o1.getNormalizedRange(), o2.getNormalizedRange())).reversed());
+            return cryptoStatisticsList.stream().map(statistics -> new NormalizedValueForCrypto(statistics.getCrypto(), statistics.getNormalizedRange())).collect(Collectors.toList());
+        }
+        return null;
     }
 
     /*extract from the statistics list the highest normalized value computed, by extracting the first element of the descending list of all normalized values for cryptos computed*/
