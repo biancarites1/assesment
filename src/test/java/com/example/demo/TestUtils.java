@@ -8,6 +8,11 @@ import java.util.*;
 
 public class TestUtils {
     public final static String BTC = "BTC";
+    public final static String BTC_values_csv = "BTC_values.csv";
+    public final static String DOGE_values_csv = "DOGE_values.csv";
+    public final static String LTC_values_csv = "LTC_values.csv";
+    public final static String ETH_values_csv = "ETH_values.csv";
+    public final static String XRP_values_csv = "XRP_values.csv";
 
     public static List<CryptoData> generateCryptoData(Date date, String currency, int length) {
         List<CryptoData> cryptoDataList = new ArrayList<>();

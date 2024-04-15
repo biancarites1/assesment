@@ -25,13 +25,13 @@ public class ResourceControllerDocumentationTest {
                 .andExpect(status().isUnauthorized())
                 .andDo(MockMvcRestDocumentation.document("statistics-for-crypto"));
     }
-//
-//    @Test
-//    public void getAllNormalizedValues() throws Exception {
-//        this.mockMvc.perform(get("/recommendation/normalized-range", "btc"))
-//                .andExpect(status().isBadRequest())
-//                .andDo(MockMvcRestDocumentation.document("normalized-range"));
-//    }
+
+    @Test
+    public void getAllNormalizedValues() throws Exception {
+        this.mockMvc.perform(get("/recommendation/normalized-range", "btc"))
+                .andExpect(status().isUnauthorized())
+                .andDo(MockMvcRestDocumentation.document("normalized-range"));
+    }
 
 
     @Test

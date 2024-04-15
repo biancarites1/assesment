@@ -5,7 +5,8 @@ import org.springframework.context.annotation.Configuration;
 
 
 @Configuration
-@ConfigurationProperties(prefix = "myapp")
+@ConfigurationProperties(prefix = "crypto")
+/*read data from configuration file*/
 public class AppConfig {
 
     private String allowedIpAddresses;
@@ -19,6 +20,16 @@ public class AppConfig {
     }
 
     private String allowedCryptos;
+
+    public String getCryptoDirectory() {
+        return cryptoDirectory;
+    }
+
+    public void setCryptoDirectory(String cryptoDirectory) {
+        this.cryptoDirectory = cryptoDirectory;
+    }
+
+    private String cryptoDirectory;
 
     // Getters and setters
     public String getAllowedIpAddresses() {

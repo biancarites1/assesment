@@ -31,10 +31,10 @@ public class RecommendationControllerTest {
     public void testGetStatisticsByCrypto() throws Exception {
         Date oldestDate = new Date();
         Date newestDate = new Date();
-        CryptoStatistics mockCryptoStatistics = new CryptoStatistics("BTC", oldestDate, newestDate, 1.0f, 100.0f, 0.54f);
-        when(mockRecommendationService.getCryptoStatisticsForSymbol( "BTC", null)).thenReturn(mockCryptoStatistics);
-        CryptoStatistics result = recommendationController.getStatisticsByCrypto(BTC, null);
-        verify(mockRecommendationService).getCryptoStatisticsForSymbol("BTC", null);
+        CryptoStatistics mockCryptoStatistics = new CryptoStatistics(BTC, oldestDate, newestDate, 1.0f, 100.0f, 0.54f);
+        when(mockRecommendationService.getCryptoStatisticsForSymbol( BTC, null, null)).thenReturn(mockCryptoStatistics);
+        CryptoStatistics result = recommendationController.getStatisticsByCrypto(BTC, null, null);
+        verify(mockRecommendationService).getCryptoStatisticsForSymbol(BTC, null, null);
         assertEquals(BTC, result.getCrypto());
         assertEquals(oldestDate, result.getOldestDate());
         assertEquals(newestDate, result.getNewestDate());
@@ -45,40 +45,40 @@ public class RecommendationControllerTest {
     @Test(expected = Exception.class)
     public void testGetStatisticsByCryptoNoData() throws Exception {
         doThrow(new Exception()).when(mockRecommendationService)
-                .getCryptoStatisticsForSymbol(anyString(), any());
-        recommendationController.getStatisticsByCrypto(BTC, null);
-        verify(mockRecommendationService).getCryptoStatisticsForSymbol("BTC", null);
+                .getCryptoStatisticsForSymbol(anyString(), any(), any());
+        recommendationController.getStatisticsByCrypto(BTC, null, null);
+        verify(mockRecommendationService).getCryptoStatisticsForSymbol(BTC, null, null);
     }
 
     @Test
     public void testGetAllNormalizedValues() throws Exception {
         List<NormalizedValueForCrypto> mockNormalizedValues = generateNormalizedValues();
-        when(mockRecommendationService.getNormalizedValuesForAllCryptos(any())).thenReturn(mockNormalizedValues);
-        List<NormalizedValueForCrypto> result = recommendationController.getAllNormalizedValues();
-        verify(mockRecommendationService).getNormalizedValuesForAllCryptos(any());
+        when(mockRecommendationService.getNormalizedValuesForAllCryptos(any(), any())).thenReturn(mockNormalizedValues);
+        List<NormalizedValueForCrypto> result = recommendationController.getAllNormalizedValues(null, null);
+        verify(mockRecommendationService).getNormalizedValuesForAllCryptos(any(), any());
         assertEquals(5, result.size());
         assertEquals(1.23f, result.get(0).getNormalizedValue(), 0);
-        assertEquals("BTC", result.get(0).getCurrency());
+        assertEquals(BTC, result.get(0).getCurrency());
     }
 
     @Test(expected = Exception.class)
     public void testGetAllNormalizedValuesNoData() throws Exception {
         doThrow(new Exception()).when(mockRecommendationService)
-                .getNormalizedValuesForAllCryptos(any());
-        recommendationController.getAllNormalizedValues();
-        verify(mockRecommendationService).getNormalizedValuesForAllCryptos(any());
+                .getNormalizedValuesForAllCryptos(any(), any());
+        recommendationController.getAllNormalizedValues(null, null);
+        verify(mockRecommendationService).getNormalizedValuesForAllCryptos(any(), any());
     }
 
     @Test
     public void testGetHighestlNormalizedValues() throws Exception {
         Date date = new Date();
 
-        NormalizedValueForCrypto mockNormalizedValue = new NormalizedValueForCrypto("BTC", 1.2f);
+        NormalizedValueForCrypto mockNormalizedValue = new NormalizedValueForCrypto(BTC, 1.2f);
         when(mockRecommendationService.getHighestNormalizedValueForCryptoByDay(any())).thenReturn(mockNormalizedValue);
         NormalizedValueForCrypto result = recommendationController.getHighestNormalizedValue(date);
         verify(mockRecommendationService).getHighestNormalizedValueForCryptoByDay(any());
         assertEquals(1.2f, result.getNormalizedValue(), 0);
-        assertEquals("BTC", result.getCurrency());
+        assertEquals(BTC, result.getCurrency());
     }
     @Test(expected = Exception.class)
     public void testGetHighestlNormalizedValuesNoData() throws Exception {

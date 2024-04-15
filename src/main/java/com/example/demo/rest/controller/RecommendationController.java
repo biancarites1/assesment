@@ -24,12 +24,14 @@ public class RecommendationController {
      * Retrieves oldest/newest/min/max values for requested crypto
      *
      * @param crypto The symbol of the crypto to retrieve statistics for.
+     * @param startingDateToComputeStatistics optional param and represents the starting date for which to compute statistics
+     * @param endingDateToComputeStatistics optional param and represents the starting date for which to compute statistics
      * @return The statistics for requested crypto.
      */
     @RequestMapping( value="/statistics-for-crypto",method= RequestMethod.GET)
-    public CryptoStatistics getStatisticsByCrypto(@RequestParam("crypto") String crypto, @RequestParam(value="requestedDay", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date requestedDay) {
+    public CryptoStatistics getStatisticsByCrypto(@RequestParam("crypto") String crypto, @RequestParam(value="startingDateToComputeStatistics", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startingDateToComputeStatistics, @RequestParam(value="endingDateToComputeStatistics", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endingDateToComputeStatistics) {
         try {
-            return recommendationService.getCryptoStatisticsForSymbol(crypto, requestedDay);
+            return recommendationService.getCryptoStatisticsForSymbol(crypto, startingDateToComputeStatistics, endingDateToComputeStatistics);
         } catch (Exception e) {
             throw new BadRequestException("Bad request");
         }
@@ -38,15 +40,17 @@ public class RecommendationController {
     /**
      * Retrieves a descending sorted list of all the cryptos,
      *    comparing the normalized range (i.e. (max-min)/min)
+     * @param startingDateToComputeStatistics optional param and represents the starting date for which to compute statistics
+     * @param endingDateToComputeStatistics optional param and represents the starting date for which to compute statistics
      *
      * @return The list of normalized values for all cryptos.
      */
     //Exposes an endpoint that will return a descending sorted list of all the cryptos,
     //comparing the normalized range (i.e. (max-min)/min)
     @RequestMapping( value="/normalized-range",method= RequestMethod.GET)
-    public List<NormalizedValueForCrypto> getAllNormalizedValues() {
+    public List<NormalizedValueForCrypto> getAllNormalizedValues(@RequestParam(value="startingDateToComputeStatistics", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date startingDateToComputeStatistics, @RequestParam(value="endingDateToComputeStatistics", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date endingDateToComputeStatistics) {
         try {
-            return recommendationService.getNormalizedValuesForAllCryptos(null);
+            return recommendationService.getNormalizedValuesForAllCryptos(startingDateToComputeStatistics, endingDateToComputeStatistics);
         } catch (Exception e) {
             throw new BadRequestException("Bad request");
         }

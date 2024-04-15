@@ -1,5 +1,6 @@
 package com.example.demo.rest.service;
 
+import com.example.demo.AppConfig;
 import com.example.demo.model.CryptoData;
 import com.example.demo.model.CryptoStatistics;
 import com.example.demo.model.NormalizedValueForCrypto;
@@ -25,14 +26,19 @@ public class RecommendationServiceTest {
 
     @Mock
     private FileExtractorService mockFileExtractorService;
+
+    @Mock
+    private AppConfig mockAppConfig;
+    private static final String mockAllowedCryptos = "BTC,DOGE";
     @Test
     public void testGetStatisticsBySymbol() throws Exception {
         Date date = new Date();
         List<CryptoData> mockCryptoDataList = generateCryptoData(date, BTC, 100);
         List<CryptoStatistics> expectedCryptoStatistics = generateCryptoStatistics(date, date,1);
         when(mockFileExtractorService.getCryptoDataList()).thenReturn(mockCryptoDataList);
+        when(mockAppConfig.getAllowedCryptos()).thenReturn(mockAllowedCryptos);
 
-        CryptoStatistics cryptoStatistics = recommendationService.getCryptoStatisticsForSymbol(BTC, date);
+        CryptoStatistics cryptoStatistics = recommendationService.getCryptoStatisticsForSymbol(BTC, date, date);
         assertEquals(expectedCryptoStatistics.get(0).getCrypto(), cryptoStatistics.getCrypto());
         assertEquals(expectedCryptoStatistics.get(0).getOldestDate(), cryptoStatistics.getOldestDate());
         assertEquals(expectedCryptoStatistics.get(0).getNewestDate(), cryptoStatistics.getNewestDate());
@@ -44,7 +50,7 @@ public class RecommendationServiceTest {
     public void testGetHighestNormalizedValueForCryptoByDay() throws Exception {
         Date date = new Date();
         List<CryptoData> mockCryptoDataList = Arrays.asList(new CryptoData(date, BTC, 100f),new CryptoData(date, BTC, 10f));
-
+        when(mockAppConfig.getAllowedCryptos()).thenReturn(mockAllowedCryptos);
         when(mockFileExtractorService.getCryptoDataList()).thenReturn(mockCryptoDataList);
         NormalizedValueForCrypto expectedNormalizedValue = new NormalizedValueForCrypto("BTC", 9.0f);
         NormalizedValueForCrypto result = recommendationService.getHighestNormalizedValueForCryptoByDay(date);

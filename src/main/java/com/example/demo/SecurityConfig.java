@@ -9,6 +9,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+/*security configuration class for the app to restrict users to access endpoints if they don't follow a set of rules*/
 public class SecurityConfig {
 
     @Autowired
