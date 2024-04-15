@@ -21,8 +21,8 @@ public class ResourceControllerDocumentationTest {
 
     @Test
     public void getStatistics() throws Exception {
-        this.mockMvc.perform(get("/recommendation/statistics-for-crypto", "BTC"))
-                .andExpect(status().isBadRequest())
+        this.mockMvc.perform(get("/api/recommendation/statistics-for-crypto", "BTC"))
+                .andExpect(status().isUnauthorized())
                 .andDo(MockMvcRestDocumentation.document("statistics-for-crypto"));
     }
 //
@@ -36,8 +36,8 @@ public class ResourceControllerDocumentationTest {
 
     @Test
     public void getHighestNormalizedValue() throws Exception {
-        this.mockMvc.perform(get("/recommendation/highest-normalized-range-by-day", new Date()))
-                .andExpect(status().isBadRequest())
+        this.mockMvc.perform(get("/api/recommendation/highest-normalized-range-by-day", new Date()))
+                .andExpect(status().isUnauthorized())
                 .andDo(MockMvcRestDocumentation.document("highest-normalized-range-by-day"));
     }
 

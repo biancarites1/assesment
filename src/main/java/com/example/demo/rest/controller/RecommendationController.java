@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController()
-@RequestMapping("/recommendation")
+@RequestMapping("/api/recommendation")
 public class RecommendationController {
     @Autowired(required = false)
     private RecommendationService recommendationService;

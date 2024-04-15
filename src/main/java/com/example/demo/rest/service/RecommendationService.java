@@ -1,5 +1,6 @@
 package com.example.demo.rest.service;
 
+import com.example.demo.AppConfig;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.model.CryptoData;
 import com.example.demo.model.CryptoStatistics;
@@ -16,6 +17,8 @@ import java.util.stream.Collectors;
 public class RecommendationService {
     @Autowired
     private FileExtractorService fileExtractorService;
+    @Autowired
+    private AppConfig appConfig;
 
     public CryptoStatistics getCryptoStatisticsForSymbol(String symbol, Date requestedDay) throws Exception {
         return generateAllCryptoStatistics(validateCryptoDataList(), requestedDay).stream().filter((cryptoStatistics -> cryptoStatistics.getCrypto().equals(symbol))).findFirst().get();
@@ -46,7 +49,17 @@ public class RecommendationService {
     }
 
     private List<String> getCryptoSymbols(List<CryptoData> cryptoDataList) {
-        return cryptoDataList.stream().map(CryptoData::getSymbol).distinct().collect(Collectors.toList());
+        List<String> supportedCryptos = appConfig.getAllowedCryptos();
+        List<String> cryptoSymbols = cryptoDataList.stream().map(CryptoData::getSymbol).distinct().collect(Collectors.toList());
+
+        List<String> notFoundEntries = cryptoSymbols.stream()
+                .filter(entry -> !supportedCryptos.contains(entry))
+                .collect(Collectors.toList());
+
+        if (!notFoundEntries.isEmpty()) {
+            throw new IllegalArgumentException("Cryptos not supported yet: " + notFoundEntries);
+        }
+        return cryptoSymbols;
     }
 
     private List<Date> getCryptoTimestamps(List<CryptoData> cryptoDataList, String crypto) {
