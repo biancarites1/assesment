@@ -1,0 +1,4 @@
+[source,bash]
+----
+$ http GET 'http://localhost:8080/recommendation/highest-normalized-range-by-day'
+----
