@@ -20,6 +20,8 @@ public class RecommendationController {
     @Autowired(required = false)
     private RecommendationService recommendationService;
 
+    private static final String BAD_REQUEST_MESSAGE = "Invalid data requested";
+
     /**
      * Retrieves oldest/newest/min/max values for requested crypto
      *
@@ -33,9 +35,8 @@ public class RecommendationController {
         try {
             return recommendationService.getCryptoStatisticsForSymbol(crypto, startingDateToComputeStatistics, endingDateToComputeStatistics);
         } catch (Exception e) {
-            throw new BadRequestException("Bad request");
+            throw new BadRequestException(BAD_REQUEST_MESSAGE);
         }
-
     }
     /**
      * Retrieves a descending sorted list of all the cryptos,
@@ -52,7 +53,7 @@ public class RecommendationController {
         try {
             return recommendationService.getNormalizedValuesForAllCryptos(startingDateToComputeStatistics, endingDateToComputeStatistics);
         } catch (Exception e) {
-            throw new BadRequestException("Bad request");
+            throw new BadRequestException(BAD_REQUEST_MESSAGE);
         }
     }
 
@@ -70,7 +71,7 @@ public class RecommendationController {
         try {
             return recommendationService.getHighestNormalizedValueForCryptoByDay(day);
         } catch (Exception e) {
-            throw new BadRequestException("Bad request");
+            throw new BadRequestException(BAD_REQUEST_MESSAGE);
         }
 
     }

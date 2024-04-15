@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
@@ -17,6 +18,7 @@ import java.util.Set;
 import static com.example.demo.TestUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -31,9 +33,7 @@ public class FileExtractorServiceTest {
 
     @Test
     public void testExtractFileNames() throws IOException, URISyntaxException {
-
         Set<String> result = fileExtractorService.extractFileNames( Paths.get(getClass().getResource(mockCryptoDirectory).toURI()).toString());
-
         Set<String> expected = Set.of(DOGE_values_csv, BTC_values_csv, LTC_values_csv, ETH_values_csv, XRP_values_csv);
         assertEquals(expected, result);
 
@@ -42,7 +42,6 @@ public class FileExtractorServiceTest {
     @Test
     public void testGetFilePath() throws Exception {
         when(mockAppConfig.getCryptoDirectory()).thenReturn(mockCryptoDirectory);
-
         List<String[]> result = fileExtractorService.readCsvFile(BTC_values_csv);
         assertEquals(102, result.size());
         assertEquals("timestamp", result.get(0)[0]);
@@ -53,6 +52,13 @@ public class FileExtractorServiceTest {
     @Test
     public void testExtractCryptoValuesFromFiles() {
         when(mockAppConfig.getCryptoDirectory()).thenReturn(mockCryptoDirectory);
+        List<CryptoData> result = fileExtractorService.extractCryptoValuesFromFiles();
+        assertTrue(result.stream().anyMatch(cryptoData -> cryptoData.getSymbol().equals(BTC)));
+    }
+
+    @Test(expected = Exception.class)
+    public void testExtractCryptoValuesFromFilesException() {
+        when(Paths.get(anyString())).thenThrow(new FileNotFoundException("File not found"));
         List<CryptoData> result = fileExtractorService.extractCryptoValuesFromFiles();
         assertTrue(result.stream().anyMatch(cryptoData -> cryptoData.getSymbol().equals(BTC)));
     }

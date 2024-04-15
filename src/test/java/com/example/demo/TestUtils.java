@@ -7,7 +7,9 @@ import com.example.demo.model.NormalizedValueForCrypto;
 import java.util.*;
 
 public class TestUtils {
+    public final static String BNB = "BNB";
     public final static String BTC = "BTC";
+    public final static String LTC = "LTC";
     public final static String BTC_values_csv = "BTC_values.csv";
     public final static String DOGE_values_csv = "DOGE_values.csv";
     public final static String LTC_values_csv = "LTC_values.csv";

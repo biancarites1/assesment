@@ -26,9 +26,13 @@ public class RecommendationService {
     /*for all supported currencies defined in csv files generate statistics with min,max price and oldest/newest date*/
     public List<CryptoStatistics> generateAllCryptoStatistics(List<CryptoData> cryptoDataList, Date startingDateToComputeStatistics, Date endingDateToComputeStatistics) {
         List<String> symbols = getCryptoSymbols(cryptoDataList);
+        if(symbols.isEmpty()) throw new NotFoundException("No currency found!");
         List<CryptoStatistics> cryptoStatisticsList = new ArrayList<>();
         for (String symbol : symbols) {
-            cryptoStatisticsList.add(generateStatisticsForCrypto(cryptoDataList, symbol, startingDateToComputeStatistics, endingDateToComputeStatistics));
+            CryptoStatistics cryptoStatistics = generateStatisticsForCrypto(cryptoDataList, symbol, startingDateToComputeStatistics, endingDateToComputeStatistics);
+            if(cryptoStatistics!=null){
+                cryptoStatisticsList.add(cryptoStatistics);
+            }
         }
         return cryptoStatisticsList;
     }
@@ -38,7 +42,8 @@ public class RecommendationService {
        List<CryptoStatistics> cryptoStatisticsList = generateAllCryptoStatistics(validateCryptoDataList(), startingDateToComputeStatistics, endingDateToComputeStatistics);
        if(!cryptoStatisticsList.isEmpty()){
            return generateAllCryptoStatistics(validateCryptoDataList(), startingDateToComputeStatistics, endingDateToComputeStatistics).stream().filter((cryptoStatistics -> cryptoStatistics.getCrypto().equals(symbol))).findFirst().get();
-       } else throw new NotFoundException("Symbol not found");
+       }
+       return null;
     }
 
     /*extract from the statistics list the normalized value computed for each crypto and sort the list of cryptos in descending order of the normalized value*/
@@ -48,7 +53,7 @@ public class RecommendationService {
             cryptoStatisticsList.sort(((Comparator<CryptoStatistics>) (o1, o2) -> Float.compare(o1.getNormalizedRange(), o2.getNormalizedRange())).reversed());
             return cryptoStatisticsList.stream().map(statistics -> new NormalizedValueForCrypto(statistics.getCrypto(), statistics.getNormalizedRange())).collect(Collectors.toList());
         }
-        return null;
+        return new ArrayList<>();
     }
 
     /*extract from the statistics list the highest normalized value computed, by extracting the first element of the descending list of all normalized values for cryptos computed*/
@@ -125,6 +130,9 @@ public class RecommendationService {
         }
         if (endingDateToComputeStatistics != null) {
             timestamps = timestamps.stream().filter(timestamp -> timestamp.before(endingDateToComputeStatistics) || timestamp.equals(endingDateToComputeStatistics)).collect(Collectors.toList());
+        }
+        if(timestamps.isEmpty()){
+            return null;
         }
         return buildCryptoStatisticsForCrypto(crypto, timestamps, prices);
     }

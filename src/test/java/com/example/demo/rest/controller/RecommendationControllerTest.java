@@ -1,5 +1,6 @@
 package com.example.demo.rest.controller;
 
+import com.example.demo.exception.NotFoundException;
 import com.example.demo.model.CryptoStatistics;
 import com.example.demo.model.NormalizedValueForCrypto;
 import com.example.demo.rest.service.RecommendationService;
@@ -28,7 +29,7 @@ public class RecommendationControllerTest {
     private RecommendationService mockRecommendationService;
 
     @Test
-    public void testGetStatisticsByCrypto() throws Exception {
+    public void testGetStatisticsByCrypto() {
         Date oldestDate = new Date();
         Date newestDate = new Date();
         CryptoStatistics mockCryptoStatistics = new CryptoStatistics(BTC, oldestDate, newestDate, 1.0f, 100.0f, 0.54f);
@@ -43,15 +44,14 @@ public class RecommendationControllerTest {
     }
 
     @Test(expected = Exception.class)
-    public void testGetStatisticsByCryptoNoData() throws Exception {
-        doThrow(new Exception()).when(mockRecommendationService)
-                .getCryptoStatisticsForSymbol(anyString(), any(), any());
+    public void testGetStatisticsByCryptoNoData() {
+        when(mockRecommendationService.getCryptoStatisticsForSymbol(anyString(), any(), any())).thenThrow(new NotFoundException("No currency found!"));
         recommendationController.getStatisticsByCrypto(BTC, null, null);
         verify(mockRecommendationService).getCryptoStatisticsForSymbol(BTC, null, null);
     }
 
     @Test
-    public void testGetAllNormalizedValues() throws Exception {
+    public void testGetAllNormalizedValues() {
         List<NormalizedValueForCrypto> mockNormalizedValues = generateNormalizedValues();
         when(mockRecommendationService.getNormalizedValuesForAllCryptos(any(), any())).thenReturn(mockNormalizedValues);
         List<NormalizedValueForCrypto> result = recommendationController.getAllNormalizedValues(null, null);
@@ -62,15 +62,14 @@ public class RecommendationControllerTest {
     }
 
     @Test(expected = Exception.class)
-    public void testGetAllNormalizedValuesNoData() throws Exception {
-        doThrow(new Exception()).when(mockRecommendationService)
-                .getNormalizedValuesForAllCryptos(any(), any());
+    public void testGetAllNormalizedValuesNoData(){
+        when(mockRecommendationService.getNormalizedValuesForAllCryptos(any(), any())).thenThrow(new NotFoundException("No currency found!"));
         recommendationController.getAllNormalizedValues(null, null);
         verify(mockRecommendationService).getNormalizedValuesForAllCryptos(any(), any());
     }
 
     @Test
-    public void testGetHighestlNormalizedValues() throws Exception {
+    public void testGetHighestlNormalizedValues() {
         Date date = new Date();
 
         NormalizedValueForCrypto mockNormalizedValue = new NormalizedValueForCrypto(BTC, 1.2f);
@@ -81,9 +80,8 @@ public class RecommendationControllerTest {
         assertEquals(BTC, result.getCurrency());
     }
     @Test(expected = Exception.class)
-    public void testGetHighestlNormalizedValuesNoData() throws Exception {
-        doThrow(new Exception()).when(mockRecommendationService)
-                .getHighestNormalizedValueForCryptoByDay(any());
+    public void testGetHighestlNormalizedValuesNoData() {
+        when(mockRecommendationService.getHighestNormalizedValueForCryptoByDay(any())).thenThrow(new NotFoundException("No currency found!"));
         recommendationController.getHighestNormalizedValue(new Date());
         verify(mockRecommendationService).getHighestNormalizedValueForCryptoByDay(any());
 
