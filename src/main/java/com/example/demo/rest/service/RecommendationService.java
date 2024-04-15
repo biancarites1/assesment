@@ -49,7 +49,7 @@ public class RecommendationService {
     }
 
     private List<String> getCryptoSymbols(List<CryptoData> cryptoDataList) {
-        List<String> supportedCryptos = appConfig.getAllowedCryptos();
+        List<String> supportedCryptos  = Arrays.asList(appConfig.getAllowedCryptos().split(","));
         List<String> cryptoSymbols = cryptoDataList.stream().map(CryptoData::getSymbol).distinct().collect(Collectors.toList());
 
         List<String> notFoundEntries = cryptoSymbols.stream()

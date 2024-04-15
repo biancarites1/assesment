@@ -1,5 +1,6 @@
 package com.example.demo.rest.controller;
 
+import com.example.demo.exception.BadRequestException;
 import com.example.demo.model.CryptoStatistics;
 import com.example.demo.model.NormalizedValueForCrypto;
 import com.example.demo.rest.service.RecommendationService;
@@ -30,7 +31,7 @@ public class RecommendationController {
         try {
             return recommendationService.getCryptoStatisticsForSymbol(crypto, requestedDay);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new BadRequestException("Bad request");
         }
 
     }
@@ -47,7 +48,7 @@ public class RecommendationController {
         try {
             return recommendationService.getNormalizedValuesForAllCryptos(null);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new BadRequestException("Bad request");
         }
     }
 
@@ -65,7 +66,7 @@ public class RecommendationController {
         try {
             return recommendationService.getHighestNormalizedValueForCryptoByDay(day);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new BadRequestException("Bad request");
         }
 
     }
